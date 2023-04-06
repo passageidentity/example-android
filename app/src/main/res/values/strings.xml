@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">example android</string>
+    <string name="asset_statements" translatable="false">
+      [{
+        \"include\": \"https://try.passage.id/.well-known/assetlinks.json\"
+      }]
+    </string>
+</resources>
