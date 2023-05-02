@@ -2,7 +2,10 @@
     <string name="app_name">example android</string>
     <string name="asset_statements" translatable="false">
       [{
-        \"include\": \"https://try.passage.id/.well-known/assetlinks.json\"
+        \"include\": \"https://try-uat.passage.dev/.well-known/assetlinks.json\"
       }]
     </string>
+    <string name="passage_app_id">tr4c3p4Ts0i26vvItvLPFbxJ</string>
+    <string name="passage_language">en</string>
+    <string name="use_passage_store">true</string>
 </resources>
