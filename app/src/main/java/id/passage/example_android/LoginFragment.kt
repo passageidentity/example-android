@@ -118,8 +118,8 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
 
     private fun handleFallbackAuthResult(fallbackResult: PassageAuthFallbackResult) {
         when (fallbackResult.method) {
-            PassageAuthFallbackMethod.otp -> Log.d("example_app", "GO TO PASSCODE INPUT")
-            PassageAuthFallbackMethod.magicLink -> Log.d("example_app", "GO TO MAGIC LINK INPUT")
+            PassageAuthFallbackMethod.otp -> navigateToOTP(fallbackResult.id)
+            PassageAuthFallbackMethod.magicLink -> navigateToMagicLink(fallbackResult.id)
             PassageAuthFallbackMethod.none -> Log.d("example_app", "This will throw an error")
         }
     }
@@ -127,6 +127,24 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
     private fun navigateToWelcome() {
         uiScope.launch {
             val action = LoginFragmentDirections.actionLoginFragmentToWelcomeFragment()
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun navigateToOTP(otpId: String) {
+        uiScope.launch {
+            val action = LoginFragmentDirections.actionLoginFragmentToOTPFragment(otpId)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun navigateToMagicLink(magicLinkId: String) {
+        uiScope.launch {
+            val isNewUser = !isShowingLogin
+            val action = LoginFragmentDirections.actionLoginFragmentToMagicLinkFragment(
+                isNewUser,
+                magicLinkId
+            )
             findNavController().navigate(action)
         }
     }
