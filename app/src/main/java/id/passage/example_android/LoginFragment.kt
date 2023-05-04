@@ -17,15 +17,16 @@ import kotlinx.coroutines.launch
 
 class LoginFragment: Fragment(R.layout.fragment_login) {
 
+    private lateinit var passage: Passage
+
     private lateinit var title: TextView
     private lateinit var editText: EditText
     private lateinit var continueButton: Button
     private lateinit var switchButton: Button
 
-    private lateinit var passage: Passage
-
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val uiScope = CoroutineScope(Dispatchers.Main)
+    private val identifier: String get() = editText.text?.toString() ?: ""
 
     private var isShowingLogin = true
         set(value) {
@@ -87,8 +88,8 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
     }
 
     private fun onClickContinue() {
+        if (identifier.isEmpty()) return
         editText.clearFocus()
-        val identifier = editText.text?.toString() ?: return
         ioScope.launch {
             try {
                 val (authResult, fallbackResult) = if (isShowingLogin) {
@@ -97,13 +98,12 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
                     passage.register(identifier)
                 }
                 if (authResult != null) {
-                    val currentUser = passage.getCurrentUser() ?: return@launch
                     navigateToWelcome()
                 } else if (fallbackResult != null) {
                     handleFallbackAuthResult(fallbackResult)
                 }
             } catch (e: Exception) {
-                Log.e("example_app", e.message ?: e.toString())
+                handleAuthException(e)
             }
         }
     }
@@ -118,8 +118,8 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
 
     private fun handleFallbackAuthResult(fallbackResult: PassageAuthFallbackResult) {
         when (fallbackResult.method) {
-            PassageAuthFallbackMethod.otp -> Log.d("example_app", "GO TO PASSCODE INPUT")
-            PassageAuthFallbackMethod.magicLink -> Log.d("example_app", "GO TO MAGIC LINK INPUT")
+            PassageAuthFallbackMethod.otp -> navigateToOTP(fallbackResult.id)
+            PassageAuthFallbackMethod.magicLink -> navigateToMagicLink(fallbackResult.id)
             PassageAuthFallbackMethod.none -> Log.d("example_app", "This will throw an error")
         }
     }
@@ -129,6 +129,35 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
             val action = LoginFragmentDirections.actionLoginFragmentToWelcomeFragment()
             findNavController().navigate(action)
         }
+    }
+
+    private fun navigateToOTP(otpId: String) {
+        uiScope.launch {
+            val isNewUser = !isShowingLogin
+            val action = LoginFragmentDirections.actionLoginFragmentToOTPFragment(
+                otpId,
+                identifier,
+                isNewUser
+            )
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun navigateToMagicLink(magicLinkId: String) {
+        uiScope.launch {
+            val isNewUser = !isShowingLogin
+            val action = LoginFragmentDirections.actionLoginFragmentToMagicLinkFragment(
+                magicLinkId,
+                identifier,
+                isNewUser
+            )
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun handleAuthException(e: Exception) {
+        Log.e("example_app", e.message ?: e.toString())
+        // TODO: Handle different kinds of exceptions
     }
 
 }

@@ -13,6 +13,12 @@
         <action
             android:id="@+id/action_loginFragment_to_welcomeFragment"
             app:destination="@id/welcomeFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_OTPFragment"
+            app:destination="@id/OTPFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_magicLinkFragment"
+            app:destination="@id/magicLinkFragment" />
     </fragment>
 
     <fragment
@@ -20,5 +26,41 @@
         android:name="id.passage.example_android.WelcomeFragment"
         android:label="fragment_welcome"
         tools:layout="@layout/fragment_welcome" />
+    <fragment
+        android:id="@+id/OTPFragment"
+        android:name="id.passage.example_android.OTPFragment"
+        android:label="fragment_otp"
+        tools:layout="@layout/fragment_otp" >
+        <argument
+            android:name="otpId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_OTPFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
+        <argument
+            android:name="identifier"
+            app:argType="string" />
+        <argument
+            android:name="isNewUser"
+            app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/magicLinkFragment"
+        android:name="id.passage.example_android.MagicLinkFragment"
+        android:label="fragment_magiclink"
+        tools:layout="@layout/fragment_magiclink" >
+        <action
+            android:id="@+id/action_magicLinkFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
+        <argument
+            android:name="magicLinkId"
+            app:argType="string" />
+        <argument
+            android:name="identifier"
+            app:argType="string" />
+        <argument
+            android:name="isNewUser"
+            app:argType="boolean" />
+    </fragment>
 
 </navigation>

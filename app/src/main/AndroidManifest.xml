@@ -14,17 +14,34 @@
         android:theme="@style/Theme.ExampleAndroid"
         tools:targetApi="31">
 
-        <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
+        <!-- For enabling use of Android Credential Manager (required) -->
+        <meta-data
+            android:name="asset_statements"
+            android:resource="@string/asset_statements" />
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- For enabling app links (optional) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="@string/passage_auth_origin" />
+            </intent-filter>
+
         </activity>
+
     </application>
 
 </manifest>
