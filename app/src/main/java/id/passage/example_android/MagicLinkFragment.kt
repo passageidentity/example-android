@@ -19,10 +19,13 @@ import kotlinx.coroutines.launch
 class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
 
     private lateinit var passage: Passage
-    private val args: MagicLinkFragmentArgs by navArgs()
 
     private lateinit var resendButton: Button
-    val mainHandler = Handler(Looper.getMainLooper())
+
+    private val args: MagicLinkFragmentArgs by navArgs()
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val uiScope = CoroutineScope(Dispatchers.Main)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,7 +34,7 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
         resendButton = view.findViewById(R.id.resendButton)
 
         resendButton.setOnClickListener {
-            resendEmail()
+            resendMagicLink()
         }
 
         mainHandler.post(object : Runnable {
@@ -49,27 +52,31 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
 
     fun handleDeepLinkMagicLink(magicLink: String) {
         mainHandler.removeCallbacksAndMessages(null)
-        CoroutineScope(Dispatchers.IO).launch {
+        ioScope.launch {
             val authResult = passage.magicLinkActivate(magicLink) ?: return@launch
             navigateToWelcome()
         }
     }
 
-    private fun resendEmail() {
-        CoroutineScope(Dispatchers.IO).launch {
-
+    private fun resendMagicLink() {
+        ioScope.launch {
+            if (args.isNewUser) {
+                passage.newRegisterMagicLink(args.identifier)
+            } else {
+                passage.newLoginMagicLink(args.identifier)
+            }
         }
     }
 
     private fun checkMagicLinkStatus() {
-        CoroutineScope(Dispatchers.IO).launch {
+        ioScope.launch {
             val authResult = passage.getMagicLinkStatus(args.magicLinkId) ?: return@launch
             navigateToWelcome()
         }
     }
 
     private fun navigateToWelcome() {
-        CoroutineScope(Dispatchers.Main).launch {
+        uiScope.launch {
             val action = MagicLinkFragmentDirections.actionMagicLinkFragmentToWelcomeFragment()
             findNavController().navigate(action)
         }

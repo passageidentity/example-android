@@ -1,11 +1,17 @@
 <resources>
     <string name="app_name">example android</string>
-    <string name="asset_statements" translatable="false">
+
+    <!-- Required Passage app settings -->
+    <string name="asset_statements">
       [{
         \"include\": \"https://try-uat.passage.dev/.well-known/assetlinks.json\"
       }]
     </string>
     <string name="passage_app_id">tr4c3p4Ts0i26vvItvLPFbxJ</string>
+
+    <!-- Optional Passage app settings -->
+    <string name="passage_auth_origin">try-uat.passage.dev</string>-->
     <string name="passage_language">en</string>
     <string name="use_passage_store">true</string>
+
 </resources>

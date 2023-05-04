@@ -37,6 +37,12 @@
         <action
             android:id="@+id/action_OTPFragment_to_welcomeFragment"
             app:destination="@id/welcomeFragment" />
+        <argument
+            android:name="identifier"
+            app:argType="string" />
+        <argument
+            android:name="isNewUser"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/magicLinkFragment"
@@ -47,11 +53,14 @@
             android:id="@+id/action_magicLinkFragment_to_welcomeFragment"
             app:destination="@id/welcomeFragment" />
         <argument
-            android:name="isNewUser"
-            app:argType="boolean" />
-        <argument
             android:name="magicLinkId"
             app:argType="string" />
+        <argument
+            android:name="identifier"
+            app:argType="string" />
+        <argument
+            android:name="isNewUser"
+            app:argType="boolean" />
     </fragment>
 
 </navigation>

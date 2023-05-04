@@ -15,10 +15,14 @@ import kotlinx.coroutines.launch
 class OTPFragment: Fragment(R.layout.fragment_otp) {
 
     private lateinit var passage: Passage
+
     private val args: OTPFragmentArgs by navArgs()
 
     private lateinit var editText: EditText
     private lateinit var continueButton: Button
+
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val uiScope = CoroutineScope(Dispatchers.Main)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,10 +38,9 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
 
     private fun submitOneTimePasscode() {
         val otp = editText.text?.toString() ?: return
-        val otpId = args.otpId
-        CoroutineScope(Dispatchers.IO).launch {
+        ioScope.launch {
             val authResult = try {
-                passage.oneTimePasscodeActivate(otp, otpId)
+                passage.oneTimePasscodeActivate(otp, args.otpId)
             } catch (e: Exception) {
                 return@launch
             }
@@ -45,8 +48,18 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
         }
     }
 
+    private fun resendOneTimePasscode() {
+        ioScope.launch {
+            if (args.isNewUser) {
+                passage.newRegisterOneTimePasscode(args.identifier)
+            } else {
+                passage.newLoginOneTimePasscode(args.identifier)
+            }
+        }
+    }
+
     private fun navigateToWelcome() {
-        CoroutineScope(Dispatchers.Main).launch {
+        uiScope.launch {
             val action = OTPFragmentDirections.actionOTPFragmentToWelcomeFragment()
             findNavController().navigate(action)
         }
