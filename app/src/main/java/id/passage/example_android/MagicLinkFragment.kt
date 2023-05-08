@@ -6,12 +6,16 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import id.passage.android.MagicLink
 import id.passage.android.Passage
+import id.passage.android.exceptions.GetMagicLinkStatusException
+import id.passage.android.exceptions.GetMagicLinkStatusInvalidException
+import id.passage.android.exceptions.MagicLinkActivateException
+import id.passage.android.exceptions.MagicLinkActivateInvalidException
+import id.passage.android.exceptions.NewLoginMagicLinkException
+import id.passage.android.exceptions.NewRegisterMagicLinkException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,7 +57,14 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
     fun handleDeepLinkMagicLink(magicLink: String) {
         mainHandler.removeCallbacksAndMessages(null)
         ioScope.launch {
-            val authResult = passage.magicLinkActivate(magicLink) ?: return@launch
+            try {
+                passage.magicLinkActivate(magicLink) ?: return@launch
+            } catch (e: MagicLinkActivateException) {
+                when (e) {
+                    is MagicLinkActivateInvalidException -> handleInvalidMagicLinkn()
+                    else -> Log.e("MagicLinkFragment", e.toString())
+                }
+            }
             navigateToWelcome()
         }
     }
@@ -61,17 +72,39 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
     private fun resendMagicLink() {
         ioScope.launch {
             if (args.isNewUser) {
-                passage.newRegisterMagicLink(args.identifier)
+                try {
+                    passage.newRegisterMagicLink(args.identifier)
+                } catch (e: NewRegisterMagicLinkException) {
+                    Log.e("MagicLinkFragment", e.toString())
+                }
             } else {
-                passage.newLoginMagicLink(args.identifier)
+                try {
+                    passage.newLoginMagicLink(args.identifier)
+                } catch (e: NewLoginMagicLinkException) {
+                    Log.e("MagicLinkFragment", e.toString())
+                }
             }
         }
     }
 
     private fun checkMagicLinkStatus() {
         ioScope.launch {
-            val authResult = passage.getMagicLinkStatus(args.magicLinkId) ?: return@launch
+            try {
+                passage.getMagicLinkStatus(args.magicLinkId) ?: return@launch
+            } catch (e: GetMagicLinkStatusException) {
+                when (e) {
+                    is GetMagicLinkStatusInvalidException -> handleInvalidMagicLinkn()
+                    else -> Log.e("MagicLinkFragment", e.toString())
+                }
+            }
             navigateToWelcome()
+        }
+    }
+
+    private fun handleInvalidMagicLinkn() {
+        mainHandler.removeCallbacksAndMessages(null)
+        uiScope.launch {
+            activity?.showAlert("Oops!", "Looks like this magic link is invalid.")
         }
     }
 
