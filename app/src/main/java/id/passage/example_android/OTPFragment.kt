@@ -1,6 +1,7 @@
 package id.passage.example_android
 
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -22,18 +23,15 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
 
     private lateinit var passage: Passage
 
-    private val args: OTPFragmentArgs by navArgs()
-
     private lateinit var editText: EditText
     private lateinit var continueButton: Button
     private lateinit var detailsTextView: TextView
     private lateinit var resendButton: Button
 
+    private val args: OTPFragmentArgs by navArgs()
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val uiScope = CoroutineScope(Dispatchers.Main)
-
     private var newOTPId: String? = null
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,14 +41,15 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
         setupView(view)
         setupListeners()
     }
+
     private fun setupView(view: View) {
         editText = view.findViewById(R.id.editText)
         continueButton = view.findViewById(R.id.continueButton)
         detailsTextView = view.findViewById(R.id.detailsTextView)
         resendButton = view.findViewById(R.id.resendButton)
-        val details = "A one-time code has been sent to ${args.identifier}. " +
+        val textString = "A one-time code has been sent to <b>${args.identifier}</b>. " +
             "Enter the code here to ${ if (args.isNewUser) "register" else "log in" }."
-        detailsTextView.text = details
+        detailsTextView.text = Html.fromHtml(textString)
         editText.requestFocus()
     }
 
