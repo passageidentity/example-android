@@ -11,6 +11,9 @@ import androidx.navigation.fragment.findNavController
 import id.passage.android.Passage
 import id.passage.android.PassageAuthFallbackMethod
 import id.passage.android.PassageAuthFallbackResult
+import id.passage.android.exceptions.LoginNoExistingUserException
+import id.passage.android.exceptions.PassageException
+import id.passage.android.exceptions.RegisterUserExistsException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,7 +58,6 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
                 navigateToWelcome()
             }
         }
-
     }
 
     private fun setupView(view: View) {
@@ -88,30 +90,47 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
     }
 
     private fun onClickContinue() {
-        if (identifier.isEmpty()) return
         editText.clearFocus()
         ioScope.launch {
-            try {
-                val (authResult, fallbackResult) = if (isShowingLogin) {
-                    passage.login(identifier)
-                } else {
-                    passage.register(identifier)
-                }
-                if (authResult != null) {
-                    navigateToWelcome()
-                } else if (fallbackResult != null) {
-                    handleFallbackAuthResult(fallbackResult)
-                }
-            } catch (e: Exception) {
-                handleAuthException(e)
+            if (isShowingLogin) {
+                login()
+            } else {
+                register()
             }
+        }
+    }
+
+    private suspend fun login() {
+        if (identifier.isEmpty()) return
+        try {
+            val (authResult, fallbackResult) = passage.login(identifier)
+            if (authResult != null) {
+                navigateToWelcome()
+            } else if (fallbackResult != null) {
+                handleFallbackAuthResult(fallbackResult)
+            }
+        } catch (e: PassageException) {
+            handleLoginException(e)
+        }
+    }
+
+    private suspend fun register() {
+        if (identifier.isEmpty()) return
+        try {
+            val (authResult, fallbackResult) = passage.register(identifier)
+            if (authResult != null) {
+                navigateToWelcome()
+            } else if (fallbackResult != null) {
+                handleFallbackAuthResult(fallbackResult)
+            }
+        } catch (e: PassageException) {
+            handleRegisterException(e)
         }
     }
 
     private fun attemptPasskeyAutofill() {
         ioScope.launch {
-            val authResult = passage.autofillPasskeyLogin() ?: return@launch
-            val currentUser = passage.getCurrentUser() ?: return@launch
+            passage.autofillPasskeyLogin() ?: return@launch
             navigateToWelcome()
         }
     }
@@ -120,7 +139,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         when (fallbackResult.method) {
             PassageAuthFallbackMethod.otp -> navigateToOTP(fallbackResult.id)
             PassageAuthFallbackMethod.magicLink -> navigateToMagicLink(fallbackResult.id)
-            PassageAuthFallbackMethod.none -> Log.d("example_app", "This will throw an error")
+            PassageAuthFallbackMethod.none -> Log.d("LoginFragment", "This will throw an error")
         }
     }
 
@@ -155,9 +174,30 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         }
     }
 
-    private fun handleAuthException(e: Exception) {
-        Log.e("example_app", e.message ?: e.toString())
-        // TODO: Handle different kinds of exceptions
+    private fun handleLoginException(e: PassageException) {
+        when (e) {
+            is LoginNoExistingUserException -> {
+                uiScope.launch {
+                    activity?.showAlert("Oops!", "User with this email or phone does not exist.")
+                }
+            }
+            else -> {
+                Log.e("LoginFragment", e.toString())
+            }
+        }
+    }
+
+    private fun handleRegisterException(e: PassageException) {
+        when (e) {
+            is RegisterUserExistsException -> {
+                uiScope.launch {
+                    activity?.showAlert("Oops!", "User with this email or phone already exists.")
+                }
+            }
+            else -> {
+                Log.e("LoginFragment", e.toString())
+            }
+        }
     }
 
 }
