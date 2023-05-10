@@ -47,7 +47,7 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
         continueButton = view.findViewById(R.id.continueButton)
         detailsTextView = view.findViewById(R.id.detailsTextView)
         resendButton = view.findViewById(R.id.resendButton)
-        val textString = "A one-time code has been sent to <b>${args.identifier}</b>. " +
+        val textString = "A one-time code has been sent to<br><b>${args.identifier}</b><br>" +
             "Enter the code here to ${ if (args.isNewUser) "register" else "log in" }."
         detailsTextView.text = Html.fromHtml(textString)
         editText.requestFocus()
