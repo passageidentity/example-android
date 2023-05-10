@@ -10,7 +10,10 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import id.passage.android.Passage
+import id.passage.android.PassageCredential
 import id.passage.android.PassageUser
+import id.passage.android.exceptions.AddDevicePasskeyCancellationException
+import id.passage.android.exceptions.AddDevicePasskeyException
 import id.passage.android.exceptions.PassageTokenException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +25,13 @@ import java.util.Locale
 class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
 
     private lateinit var passage: Passage
+    private var user: PassageUser? = null
 
-    private lateinit var logoutButton: Button
-    private lateinit var emailTextView: TextView
+    private lateinit var identifierTextView: TextView
+    private lateinit var userPasskeysTextView: TextView
     private lateinit var devicesLinearLayout: LinearLayoutCompat
+    private lateinit var addPasskeyButton: Button
+    private lateinit var logoutButton: Button
 
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private val ioScope = CoroutineScope(Dispatchers.IO)
@@ -41,12 +47,17 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
     }
 
     private fun setupView(view: View) {
-        logoutButton = view.findViewById(R.id.logoutButton)
-        emailTextView = view.findViewById(R.id.emailTextView)
+        identifierTextView = view.findViewById(R.id.identifierTextView)
+        userPasskeysTextView = view.findViewById(R.id.userPasskeysTextView)
         devicesLinearLayout = view.findViewById(R.id.devicesLinearLayout)
+        addPasskeyButton = view.findViewById(R.id.addPasskeyButton)
+        logoutButton = view.findViewById(R.id.logoutButton)
     }
 
     private fun setupListeners() {
+        addPasskeyButton.setOnClickListener {
+            addPasskey()
+        }
         logoutButton.setOnClickListener {
             logOut()
         }
@@ -54,25 +65,20 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
 
     private fun getUser() {
         ioScope.launch {
-            val user = passage.getCurrentUser()
+            user = passage.getCurrentUser()
             user?.let {
-                displayUserInfo(it)
+                displayUserInfo()
             } ?: logOut()
         }
     }
 
-    private fun displayUserInfo(user: PassageUser) {
+    private fun displayUserInfo() {
+        val user = user ?: return
         uiScope.launch {
             // Display user identifier
-            emailTextView.text = user.email ?: user.phone ?: ""
+            identifierTextView.text = user.email ?: user.phone ?: ""
             // Display user passkeys with created at dates
-            user.webauthnDevices?.forEach { device ->
-                var text = "Unnamed device"
-                device.friendlyName?.let { text = it }
-                device.createdAt?.let { text += " created ${formatDate(it)}" }
-                val textView = createTextView(text)
-                devicesLinearLayout.addView(textView)
-            }
+            user.webauthnDevices?.forEach { appendPasskeyToList(it) }
         }
     }
 
@@ -91,6 +97,37 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
         val formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)
         val dateTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME)
         return formatter.format(dateTime.toLocalDate())
+    }
+
+    private fun addPasskey() {
+        val user = user ?: return
+        ioScope.launch {
+            try {
+                val webauthnDevice = user.addDevicePasskey(requireActivity()) ?: return@launch
+                appendPasskeyToList(webauthnDevice)
+            } catch (e: AddDevicePasskeyException) {
+                when (e) {
+                    is AddDevicePasskeyCancellationException -> {
+                        // Do nothing
+                    }
+                    else -> {
+                        uiScope.launch {
+                            activity?.showAlert("Oops!", "Problem adding passkey. Please try again.")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun appendPasskeyToList(passkey: PassageCredential) {
+        uiScope.launch {
+            var text = "Unnamed credential"
+            passkey.friendlyName?.let { text = it }
+            passkey.createdAt?.let { text += " created ${formatDate(it)}" }
+            val textView = createTextView(text)
+            devicesLinearLayout.addView(textView)
+        }
     }
 
     private fun logOut() {
