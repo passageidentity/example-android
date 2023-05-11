@@ -1,10 +1,12 @@
 package id.passage.example_android
 
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -21,25 +23,42 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
 
     private lateinit var passage: Passage
 
-    private val args: OTPFragmentArgs by navArgs()
-
     private lateinit var editText: EditText
     private lateinit var continueButton: Button
+    private lateinit var detailsTextView: TextView
+    private lateinit var resendButton: Button
 
+    private val args: OTPFragmentArgs by navArgs()
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val uiScope = CoroutineScope(Dispatchers.Main)
-
     private var newOTPId: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         passage = Passage(requireActivity())
 
+        setupView(view)
+        setupListeners()
+    }
+
+    private fun setupView(view: View) {
         editText = view.findViewById(R.id.editText)
         continueButton = view.findViewById(R.id.continueButton)
+        detailsTextView = view.findViewById(R.id.detailsTextView)
+        resendButton = view.findViewById(R.id.resendButton)
+        val textString = "A one-time code has been sent to<br><b>${args.identifier}</b><br>" +
+            "Enter the code here to ${ if (args.isNewUser) "register" else "log in" }."
+        detailsTextView.text = Html.fromHtml(textString)
+        editText.requestFocus()
+    }
 
+    private fun setupListeners() {
         continueButton.setOnClickListener {
             submitOneTimePasscode()
+        }
+        resendButton.setOnClickListener {
+            resendOneTimePasscode()
         }
     }
 
