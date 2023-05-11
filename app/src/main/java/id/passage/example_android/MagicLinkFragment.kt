@@ -107,13 +107,13 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
         ioScope.launch {
             try {
                 passage.getMagicLinkStatus(newMagicLinkId ?: args.magicLinkId) ?: return@launch
+                navigateToWelcome()
             } catch (e: GetMagicLinkStatusException) {
                 when (e) {
                     is GetMagicLinkStatusInvalidException -> handleInvalidMagicLink()
                     else -> Log.e("MagicLinkFragment", e.toString())
                 }
             }
-            navigateToWelcome()
         }
     }
 
