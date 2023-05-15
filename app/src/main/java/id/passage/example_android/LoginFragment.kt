@@ -145,6 +145,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
 
     private fun navigateToWelcome() {
         uiScope.launch {
+            editText.setText("")
             val action = LoginFragmentDirections.actionLoginFragmentToWelcomeFragment()
             findNavController().navigate(action)
         }
