@@ -29,3 +29,10 @@ local.properties
 /captures
 .externalNativeBuild
 .cxx
+
+# App bundle files
+app/release
+app/debug
+
+# Keystore files
+keystore
