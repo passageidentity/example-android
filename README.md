@@ -34,5 +34,3 @@ In the [strings.xml file](https://github.com/passageidentity/example-android/blo
 ### 🚀 Run the app!
 
 If all of the configuration was setup correctly, you should be able to run this application in the emulator or on a real device through Android Studio!
-
-NOTE: As of this writing, the Android emulator does not support passkeys, so when run in the emulator this example will fallback to one time passcodes or magic links instead.
