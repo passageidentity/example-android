@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "example android"
-include ':app',':passage'
-project(':passage').projectDir = new File(settingsDir, '../passage-android/passage')
+include ':app'//,':passage'
+//project(':passage').projectDir = new File(settingsDir, '../passage-android/passage')
