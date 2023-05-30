@@ -18,7 +18,7 @@ A successful registration flow will look like this:
 - Android Studio Electric Eel (or newer)
 - Android device with Android 13+ installed and Google account setup
 - A Passage account and app (you can register for a free account [here](https://passage.id))
-- Completed registration of your Android app with Passage (view instructions [here](https://github.com/passageidentity/passage-android))
+- Completed registration of your Android app with Passage (view instructions [here](https://docs.passage.id/mobile/android/add-passage))
   - NOTE: When setting up your `assetlinks.json` file, you'll need to add `id.passage.example_android` to your target list OR change the package name of this example app to match your Android app's package name.
 
 <br>
