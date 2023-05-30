@@ -18,7 +18,7 @@ A successful registration flow will look like this:
 - Android Studio Electric Eel (or newer)
 - Android device with Android 13+ installed and Google account setup
 - A Passage account and app (you can register for a free account [here](https://passage.id))
-- Completed registration of your Android app with Passage (view instructions [here](https://github.com/passageidentity/passage-android))
+- Completed registration of your Android app with Passage (view instructions [here](https://docs.passage.id/mobile/android/add-passage))
   - NOTE: When setting up your `assetlinks.json` file, you'll need to add `id.passage.example_android` to your target list OR change the package name of this example app to match your Android app's package name.
 
 <br>
@@ -27,7 +27,7 @@ A successful registration flow will look like this:
 
 ### ✏️ Modify `strings.xml` file
 
-In the [strings.xml file](https://github.com/passageidentity/example-android/blob/main/app/src/main/res/values/strings.xml) replace `YOUR_APP_ID` and `YOUR_AUTH_ORIGIN` with your app’s Passage app id and auth origin, respectively. Learn more about Passage app ids and auth origins [here](https://docs.passage.id/mobile/android/add-passage).
+In the [strings.xml file](https://github.com/passageidentity/example-android/blob/main/app/src/main/res/values/strings.xml) replace `YOUR_APP_ID` and `YOUR_AUTH_ORIGIN` with your app’s Passage app id and auth origin, respectively. Learn more about Passage app ids and auth origins [here](https://docs.passage.id/getting-started/creating-a-new-app).
 <img width="1011" alt="Screenshot 2023-05-15 at 5 54 58 PM" src="https://github.com/passageidentity/example-android/assets/16176400/35220be6-cc05-4bbf-8c2e-3c9e0e781a65">
 
 
