@@ -9,7 +9,8 @@
 
 A successful registration flow will look like this:
 
-<img width="1069" alt="Screenshot 2023-05-15 at 5 42 31 PM" src="https://github.com/passageidentity/example-android/assets/16176400/0b45d333-edc3-4871-b9fa-71dce3bd48be">
+<img width="1069" alt="Screenshot 2023-05-15 at 5 42 31 PM" src="https://github.com/passageidentity/example-android/assets/16176400/22c00338-2912-4275-a3a3-02282aa85e66">
+
 
 <br>
 
@@ -28,7 +29,7 @@ A successful registration flow will look like this:
 ### ✏️ Modify `strings.xml` file
 
 In the [strings.xml file](https://github.com/passageidentity/example-android/blob/main/app/src/main/res/values/strings.xml) replace `YOUR_APP_ID` and `YOUR_AUTH_ORIGIN` with your app’s Passage app id and auth origin, respectively. Learn more about Passage app ids and auth origins [here](https://docs.passage.id/getting-started/creating-a-new-app).
-<img width="1011" alt="Screenshot 2023-05-15 at 5 54 58 PM" src="https://github.com/passageidentity/example-android/assets/16176400/35220be6-cc05-4bbf-8c2e-3c9e0e781a65">
+<img width="1011" alt="Screenshot 2023-05-15 at 5 54 58 PM" src="https://github.com/passageidentity/example-android/assets/16176400/6bd89ecd-12c7-4f1f-a2cc-2c2e1daa9dfc">
 
 
 ### 🚀 Run the app!
