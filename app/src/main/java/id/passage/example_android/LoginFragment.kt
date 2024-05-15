@@ -36,13 +36,13 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
                 title.text = "Log In"
                 switchButton.text = "Don't have an account? Register"
                 authWithPasskeysButton.text = "Login with Passkeys"
-                authWithOTPButton.text = "Login with One Time Passcode"
+                authWithOTPButton.text = "Login with One-Time Passcode"
                 authWithMagiclinkButton.text = "Login with Magic link"
             } else {
                 title.text = "Register"
                 switchButton.text = "Already have an account? Log in"
                 authWithPasskeysButton.text = "Register with Passkeys"
-                authWithOTPButton.text = "Register with One Time Passcode"
+                authWithOTPButton.text = "Register with One-Time Passcode"
                 authWithMagiclinkButton.text = "Register with Magic link"
             }
         }
