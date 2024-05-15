@@ -9,11 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import id.passage.android.Passage
-import id.passage.android.PassageAuthFallbackMethod
-import id.passage.android.PassageAuthFallbackResult
-import id.passage.android.exceptions.LoginNoExistingUserException
 import id.passage.android.exceptions.PassageException
-import id.passage.android.exceptions.RegisterUserExistsException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +20,9 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
 
     private lateinit var title: TextView
     private lateinit var editText: EditText
-    private lateinit var continueButton: Button
+    private lateinit var authWithPasskeysButton: Button
+    private lateinit var authWithOTPButton: Button
+    private lateinit var authWithMagiclinkButton: Button
     private lateinit var switchButton: Button
 
     private val ioScope = CoroutineScope(Dispatchers.IO)
@@ -37,9 +35,15 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
             if (value) {
                 title.text = "Log In"
                 switchButton.text = "Don't have an account? Register"
+                authWithPasskeysButton.text = "Login with Passkeys"
+                authWithOTPButton.text = "Login with One time passcode"
+                authWithMagiclinkButton.text = "Login with Magic link"
             } else {
                 title.text = "Register"
                 switchButton.text = "Already have an account? Log in"
+                authWithPasskeysButton.text = "Register with Passkeys"
+                authWithOTPButton.text = "Register with One time passcode"
+                authWithMagiclinkButton.text = "Register with Magic link"
             }
         }
 
@@ -64,21 +68,24 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         view.visibility = View.INVISIBLE
         title = view.findViewById(R.id.title)
         editText = view.findViewById(R.id.editText)
-        continueButton = view.findViewById(R.id.continueButton)
+        authWithPasskeysButton = view.findViewById(R.id.authWithPasskeysButton)
+        authWithOTPButton = view.findViewById(R.id.authWithOTPButton)
+        authWithMagiclinkButton = view.findViewById(R.id.authWithMagicLinkButton)
         switchButton = view.findViewById(R.id.switchButton)
     }
 
     private fun setupListeners() {
-        continueButton.setOnClickListener {
-            onClickContinue()
+        authWithPasskeysButton.setOnClickListener {
+            onClickWithPasskeys()
+        }
+        authWithOTPButton.setOnClickListener {
+            onClickWithOTP()
+        }
+        authWithMagiclinkButton.setOnClickListener {
+            onClickWithMagicLink()
         }
         switchButton.setOnClickListener {
             isShowingLogin = !isShowingLogin
-        }
-        editText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && isShowingLogin) {
-                attemptPasskeyAutofill()
-            }
         }
     }
 
@@ -89,59 +96,69 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         }
     }
 
-    private fun onClickContinue() {
+    private fun onClickWithPasskeys() {
         editText.clearFocus()
         ioScope.launch {
             if (isShowingLogin) {
-                login()
+                loginWithPasskeys()
             } else {
-                register()
+                registerWithPasskeys()
             }
         }
     }
 
-    private suspend fun login() {
-        if (identifier.isEmpty()) return
-        try {
-            val (authResult, fallbackResult) = passage.login(identifier)
-            if (authResult != null) {
-                navigateToWelcome()
-            } else if (fallbackResult != null) {
-                handleFallbackAuthResult(fallbackResult)
-            }
-        } catch (e: PassageException) {
-            handleLoginException(e)
-        }
-    }
-
-    private suspend fun register() {
-        if (identifier.isEmpty()) return
-        try {
-            val (authResult, fallbackResult) = passage.register(identifier)
-            if (authResult != null) {
-                navigateToWelcome()
-            } else if (fallbackResult != null) {
-                handleFallbackAuthResult(fallbackResult)
-            }
-        } catch (e: PassageException) {
-            handleRegisterException(e)
-        }
-    }
-
-    private fun attemptPasskeyAutofill() {
+    private fun onClickWithOTP() {
         ioScope.launch {
-            passage.autofillPasskeyLogin() ?: return@launch
-            navigateToWelcome()
+            try {
+                if (isShowingLogin) {
+                    val otp = passage.newLoginOneTimePasscode(identifier)
+                    navigateToOTP(otp.otpId)
+                } else {
+                    val otp = passage.newRegisterOneTimePasscode(identifier)
+                    navigateToOTP(otp.otpId)
+                }
+            } catch (e: Exception) {
+                handleException(e)
+            }
         }
     }
 
-    private fun handleFallbackAuthResult(fallbackResult: PassageAuthFallbackResult) {
-        when (fallbackResult.method) {
-            PassageAuthFallbackMethod.otp -> navigateToOTP(fallbackResult.id)
-            PassageAuthFallbackMethod.magicLink -> navigateToMagicLink(fallbackResult.id)
-            PassageAuthFallbackMethod.none -> Log.d("LoginFragment", "This will throw an error")
+    private fun onClickWithMagicLink() {
+        ioScope.launch {
+            try {
+                if (isShowingLogin) {
+                    val magicLink = passage.newLoginMagicLink(identifier)
+                    navigateToMagicLink(magicLink.id)
+                } else {
+                    val magicLink = passage.newRegisterMagicLink(identifier)
+                    navigateToMagicLink(magicLink.id)
+                }
+            } catch (e: Exception) {
+                handleException(e)
+            }
         }
     }
+
+    private suspend fun loginWithPasskeys() {
+        if (identifier.isEmpty()) return
+        try {
+            passage.loginWithPasskey(identifier)
+            navigateToWelcome()
+        } catch (e: PassageException) {
+            handleException(e)
+        }
+    }
+
+    private suspend fun registerWithPasskeys() {
+        if (identifier.isEmpty()) return
+        try {
+            passage.registerWithPasskey(identifier)
+            navigateToWelcome()
+        } catch (e: PassageException) {
+            handleException(e)
+        }
+    }
+
 
     private fun navigateToWelcome() {
         uiScope.launch {
@@ -175,24 +192,11 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         }
     }
 
-    private fun handleLoginException(e: PassageException) {
+    private fun handleException(e: Exception) {
         when (e) {
-            is LoginNoExistingUserException -> {
+            is PassageException -> {
                 uiScope.launch {
-                    activity?.showAlert("Oops!", "User with this email or phone does not exist.")
-                }
-            }
-            else -> {
-                Log.e("LoginFragment", e.toString())
-            }
-        }
-    }
-
-    private fun handleRegisterException(e: PassageException) {
-        when (e) {
-            is RegisterUserExistsException -> {
-                uiScope.launch {
-                    activity?.showAlert("Oops!", "User with this email or phone already exists.")
+                    activity?.showAlert("Oops!", e.message.toString())
                 }
             }
             else -> {
