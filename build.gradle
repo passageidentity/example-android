@@ -1,5 +1,5 @@
 buildscript {
-    ext.nav_version = "2.5.3"
+    ext.nav_version = "2.7.7"
     repositories {
         google()
     }

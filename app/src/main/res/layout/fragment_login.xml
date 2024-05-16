@@ -35,15 +35,37 @@
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <Button
-        android:id="@+id/continueButton"
+        android:id="@+id/authWithPasskeysButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:text="Continue"
+        android:text="Login With Passkeys"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText" />
+
+    <Button
+        android:id="@+id/authWithOTPButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:text="Login With One-Time Passcode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/authWithPasskeysButton" />
+
+    <Button
+        android:id="@+id/authWithMagicLinkButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:text="Login With Magiclink"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/authWithOTPButton" />
 
     <Button
         android:id="@+id/switchButton"
@@ -55,7 +77,7 @@
         android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/continueButton" />
+        app:layout_constraintTop_toBottomOf="@+id/authWithMagicLinkButton" />
 
     <ImageView
         android:id="@+id/imageView"
