@@ -53,6 +53,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         setupListeners()
 
         passage = Passage(requireActivity())
+        passage.overrideBasePath("https://auth-uat.passage.dev/v1")
 
         ioScope.launch {
             val currentUser = passage.getCurrentUser()
@@ -82,7 +83,8 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
             onClickWithOTP()
         }
         authWithMagiclinkButton.setOnClickListener {
-            onClickWithMagicLink()
+//            onClickWithMagicLink()
+            onClickHosted()
         }
         switchButton.setOnClickListener {
             isShowingLogin = !isShowingLogin
@@ -143,6 +145,16 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
                     val magicLink = passage.newRegisterMagicLink(identifier)
                     navigateToMagicLink(magicLink.id)
                 }
+            } catch (e: Exception) {
+                handleException(e)
+            }
+        }
+    }
+
+    private fun onClickHosted() {
+        uiScope.launch {
+            try {
+                passage.hostedAuthStart()
             } catch (e: Exception) {
                 handleException(e)
             }

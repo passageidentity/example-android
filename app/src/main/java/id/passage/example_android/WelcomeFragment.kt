@@ -40,6 +40,7 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
         super.onViewCreated(view, savedInstanceState)
 
         passage = Passage(requireActivity())
+        passage.overrideBasePath("https://auth-uat.passage.dev/v1")
 
         setupView(view)
         setupListeners()

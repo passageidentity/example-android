@@ -47,5 +47,6 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
-    implementation 'id.passage.android:passage:1.7.1'
+    implementation 'id.passage.android:passage:1.8.0'
+//    implementation project (':passage')
 }
