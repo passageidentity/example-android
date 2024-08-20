@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         fragmentContainerView = findViewById(R.id.nav_host_fragment_container)
-        passage = Passage(this, "CFKsqjyERaYC3DLqEexaJzKW")
+        passage = Passage(this, "YOUR_APP_ID")
     }
 
     override fun onNewIntent(intent: Intent?) {

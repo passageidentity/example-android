@@ -56,7 +56,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         setupView(view)
         setupListeners()
 
-        passage = Passage(requireActivity(), "CFKsqjyERaYC3DLqEexaJzKW")
+        passage = Passage(requireActivity(), "YOUR_APP_ID")
 
         ioScope.launch {
             try {
@@ -111,7 +111,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         try {
             passage.hosted.hostedAuthStart()
         } catch (e: Exception) {
-            var a = e
+            // Handle the error here
         }
     }
 

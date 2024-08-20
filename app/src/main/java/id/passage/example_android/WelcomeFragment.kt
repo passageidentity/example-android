@@ -41,7 +41,7 @@ class WelcomeFragment : Fragment(R.layout.fragment_welcome) {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        passage = Passage(requireActivity(), "CFKsqjyERaYC3DLqEexaJzKW")
+        passage = Passage(requireActivity(), "YOUR_APP_ID")
 
         setupView(view)
         setupListeners()
