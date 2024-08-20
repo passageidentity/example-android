@@ -63,7 +63,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
                 passage.currentUser.userInfo()
                 navigateToWelcome()
             } catch (e: Exception) {
-                // Handle the error here
+                showLogin()
             }
         }
     }
