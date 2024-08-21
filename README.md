@@ -24,7 +24,7 @@
 - Android device with Android 13+ installed and Google account setup
 - A Passage account and app (you can register for a free account [here](https://passage.id))
 - Completed registration of your Android app with Passage (view instructions [here](https://docs.passage.id/mobile/android/add-passage))
-  - NOTE: When setting up your `assetlinks.json` file, you'll need to add `id.passage.example_android` to your target list OR change the package name of this example app to match your Android app's package name.
+  - NOTE: When setting up your `assetlinks.json` file, you'll need to add `id.passage.example_android` to your target list OR change the package name of this example app to match your Android app's package name. (You can skip this step if you're using Hosted Login. Please refer to this [page](https://docs.passage.id/mobile/android/add-passage))
 
 <br>
 
@@ -34,6 +34,13 @@
 
 In the [strings.xml file](https://github.com/passageidentity/example-android/blob/main/app/src/main/res/values/strings.xml) replace`YOUR_AUTH_ORIGIN` with your app’s Passage auth origin, respectively. Learn more about Passage app ids and auth origins [here](https://docs.passage.id/getting-started/creating-a-new-app).
 <img width="927" alt="image" src="https://github.com/user-attachments/assets/a4ce766a-12f0-468d-a071-2e19ac3edc25">
+
+**If you're using Hosted Login, you can get your `YOUR_AUTH_ORIGIN` from here:**
+
+In "Native Apps" in Passage Console, you can get your app's associated domain. Use this value (minus the "https://") instead of YOUR_AUTH_ORIGIN in the next step below.
+
+![image](https://github.com/user-attachments/assets/50d9f8d1-4b08-40fd-b042-01ac2a2a623c)
+
 
 
 
