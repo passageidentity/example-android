@@ -9,8 +9,7 @@
 
 A successful registration flow will look like this:
 
-
-All good, there’s still a small chance they could make it later in September if a cancellation comes up.
+![image](https://github.com/user-attachments/assets/674fd6e6-0330-42e2-b467-eada7709f509)
 
 
 <br>
