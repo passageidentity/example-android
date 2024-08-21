@@ -10,11 +10,11 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import id.passage.android.Passage
-import id.passage.android.PassageCredential
-import id.passage.android.PassageUser
 import id.passage.android.exceptions.AddDevicePasskeyCancellationException
 import id.passage.android.exceptions.AddDevicePasskeyException
 import id.passage.android.exceptions.PassageTokenException
+import id.passage.android.utils.CurrentUserInfo
+import id.passage.android.utils.Passkey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,10 +22,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
-
+class WelcomeFragment : Fragment(R.layout.fragment_welcome) {
     private lateinit var passage: Passage
-    private var user: PassageUser? = null
+    private var user: CurrentUserInfo? = null
 
     private lateinit var identifierTextView: TextView
     private lateinit var userPasskeysTextView: TextView
@@ -36,10 +35,13 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private val ioScope = CoroutineScope(Dispatchers.IO)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
-        passage = Passage(requireActivity())
+        passage = Passage(requireActivity(), "YOUR_APP_ID")
 
         setupView(view)
         setupListeners()
@@ -65,10 +67,14 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
 
     private fun getUser() {
         ioScope.launch {
-            user = passage.getCurrentUser()
-            user?.let {
-                displayUserInfo()
-            } ?: logOut()
+            try {
+                user = passage.currentUser.userInfo()
+                user?.let {
+                    displayUserInfo()
+                } ?: logOut()
+            } catch (e: Exception) {
+                logOut()
+            }
         }
     }
 
@@ -78,16 +84,17 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
             // Display user identifier
             identifierTextView.text = user.email ?: user.phone ?: ""
             // Display user passkeys with created at dates
-            user.webauthnDevices?.forEach { appendPasskeyToList(it) }
+            user.webauthnDevices.forEach { appendPasskeyToList(it) }
         }
     }
 
     private fun createTextView(text: String): TextView {
         val textView = TextView(activity)
-        textView.layoutParams = LinearLayoutCompat.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
+        textView.layoutParams =
+            LinearLayoutCompat.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            )
         textView.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
         textView.text = text
         return textView
@@ -103,7 +110,7 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
         val user = user ?: return
         ioScope.launch {
             try {
-                val webauthnDevice = user.addDevicePasskey(requireActivity()) ?: return@launch
+                val webauthnDevice = passage.currentUser.addPasskey() ?: return@launch
                 appendPasskeyToList(webauthnDevice)
             } catch (e: AddDevicePasskeyException) {
                 when (e) {
@@ -120,7 +127,7 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
         }
     }
 
-    private fun appendPasskeyToList(passkey: PassageCredential) {
+    private fun appendPasskeyToList(passkey: Passkey) {
         uiScope.launch {
             var text = "Unnamed credential"
             passkey.friendlyName?.let { text = it }
@@ -133,7 +140,7 @@ class WelcomeFragment: Fragment(R.layout.fragment_welcome) {
     private fun logOut() {
         uiScope.launch {
             try {
-                passage.signOutCurrentUser()
+                passage.currentUser.logout()
                 findNavController().popBackStack(R.id.loginFragment, false)
             } catch (e: PassageTokenException) {
                 Log.e("WelcomeFragment", e.toString())

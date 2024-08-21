@@ -21,6 +21,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
     private lateinit var title: TextView
     private lateinit var editText: EditText
     private lateinit var authWithPasskeysButton: Button
+    private lateinit var authWithHostedButton: Button
     private lateinit var authWithOTPButton: Button
     private lateinit var authWithMagiclinkButton: Button
     private lateinit var switchButton: Button
@@ -47,21 +48,27 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
             }
         }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupView(view)
         setupListeners()
 
-        passage = Passage(requireActivity())
+        passage = Passage(requireActivity(), "YOUR_APP_ID")
 
         ioScope.launch {
-            val currentUser = passage.getCurrentUser()
-            if (currentUser == null) {
-                showLogin()
-            } else {
+            try {
+                passage.currentUser.userInfo()
                 navigateToWelcome()
+            } catch (e: Exception) {
+                showLogin()
             }
         }
+    }
+    fun handleDeepLink() {
+        navigateToWelcome()
     }
 
     private fun setupView(view: View) {
@@ -71,6 +78,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         authWithPasskeysButton = view.findViewById(R.id.authWithPasskeysButton)
         authWithOTPButton = view.findViewById(R.id.authWithOTPButton)
         authWithMagiclinkButton = view.findViewById(R.id.authWithMagicLinkButton)
+        authWithHostedButton = view.findViewById(R.id.authWithHostedButton)
         switchButton = view.findViewById(R.id.switchButton)
     }
 
@@ -87,6 +95,9 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         switchButton.setOnClickListener {
             isShowingLogin = !isShowingLogin
         }
+        authWithHostedButton.setOnClickListener {
+            onClickWithHosted()
+        }
     }
 
     private fun showLogin() {
@@ -96,15 +107,23 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         }
     }
 
+    private fun onClickWithHosted() {
+        try {
+            passage.hosted.hostedAuthStart()
+        } catch (e: Exception) {
+            // Handle the error here
+        }
+    }
+
     private fun onClickWithPasskeys() {
         editText.clearFocus()
         if (identifier.isEmpty()) return
         ioScope.launch {
             try {
                 if (isShowingLogin) {
-                    passage.loginWithPasskey(identifier)
+                    passage.passkey.login(identifier)
                 } else {
-                    passage.registerWithPasskey(identifier)
+                    passage.passkey.register(identifier)
                 }
                 navigateToWelcome()
             } catch (e: Exception) {
@@ -119,10 +138,10 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         ioScope.launch {
             try {
                 if (isShowingLogin) {
-                    val otp = passage.newLoginOneTimePasscode(identifier)
+                    val otp = passage.oneTimePasscode.login(identifier)
                     navigateToOTP(otp.otpId)
                 } else {
-                    val otp = passage.newRegisterOneTimePasscode(identifier)
+                    val otp = passage.oneTimePasscode.register(identifier)
                     navigateToOTP(otp.otpId)
                 }
             } catch (e: Exception) {
@@ -137,10 +156,10 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         ioScope.launch {
             try {
                 if (isShowingLogin) {
-                    val magicLink = passage.newLoginMagicLink(identifier)
+                    val magicLink = passage.magicLink.login(identifier)
                     navigateToMagicLink(magicLink.id)
                 } else {
-                    val magicLink = passage.newRegisterMagicLink(identifier)
+                    val magicLink = passage.magicLink.register(identifier)
                     navigateToMagicLink(magicLink.id)
                 }
             } catch (e: Exception) {
@@ -160,11 +179,12 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
     private fun navigateToOTP(otpId: String) {
         uiScope.launch {
             val isNewUser = !isShowingLogin
-            val action = LoginFragmentDirections.actionLoginFragmentToOTPFragment(
-                otpId,
-                identifier,
-                isNewUser
-            )
+            val action =
+                LoginFragmentDirections.actionLoginFragmentToOTPFragment(
+                    otpId,
+                    identifier,
+                    isNewUser,
+                )
             findNavController().navigate(action)
         }
     }
@@ -172,11 +192,12 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
     private fun navigateToMagicLink(magicLinkId: String) {
         uiScope.launch {
             val isNewUser = !isShowingLogin
-            val action = LoginFragmentDirections.actionLoginFragmentToMagicLinkFragment(
-                magicLinkId,
-                identifier,
-                isNewUser
-            )
+            val action =
+                LoginFragmentDirections.actionLoginFragmentToMagicLinkFragment(
+                    magicLinkId,
+                    identifier,
+                    isNewUser,
+                )
             findNavController().navigate(action)
         }
     }
@@ -193,5 +214,4 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
             }
         }
     }
-
 }

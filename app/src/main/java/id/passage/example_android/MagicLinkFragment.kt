@@ -16,14 +16,13 @@ import id.passage.android.exceptions.GetMagicLinkStatusException
 import id.passage.android.exceptions.GetMagicLinkStatusInvalidException
 import id.passage.android.exceptions.MagicLinkActivateException
 import id.passage.android.exceptions.MagicLinkActivateInvalidException
-import id.passage.android.exceptions.NewLoginMagicLinkException
-import id.passage.android.exceptions.NewRegisterMagicLinkException
+import id.passage.android.exceptions.MagicLinkLoginException
+import id.passage.android.exceptions.MagicLinkRegisterException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
-
+class MagicLinkFragment : Fragment(R.layout.fragment_magiclink) {
     private lateinit var passage: Passage
 
     private lateinit var resendButton: Button
@@ -35,11 +34,12 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private var newMagicLinkId: String? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-
-        passage = Passage(requireActivity())
-
+        passage = Passage(requireActivity(), "YOUR_APP_ID")
         setupView(view)
         setupListeners()
     }
@@ -60,19 +60,21 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
         resendButton.setOnClickListener {
             resendMagicLink()
         }
-        mainHandler.post(object : Runnable {
-            override fun run() {
-                checkMagicLinkStatus()
-                mainHandler.postDelayed(this, 1000)
-            }
-        })
+        mainHandler.post(
+            object : Runnable {
+                override fun run() {
+                    checkMagicLinkStatus()
+                    mainHandler.postDelayed(this, 1000)
+                }
+            },
+        )
     }
 
     fun handleDeepLinkMagicLink(magicLink: String) {
         mainHandler.removeCallbacksAndMessages(null)
         ioScope.launch {
             try {
-                passage.magicLinkActivate(magicLink) ?: return@launch
+                passage.magicLink.activate(magicLink) ?: return@launch
             } catch (e: MagicLinkActivateException) {
                 when (e) {
                     is MagicLinkActivateInvalidException -> handleInvalidMagicLink()
@@ -87,16 +89,16 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
         ioScope.launch {
             if (args.isNewUser) {
                 try {
-                    val magicLink = passage.newRegisterMagicLink(args.identifier)
-                    newMagicLinkId = magicLink?.id
-                } catch (e: NewRegisterMagicLinkException) {
+                    val magicLink = passage.magicLink.register(args.identifier)
+                    newMagicLinkId = magicLink.id
+                } catch (e: MagicLinkRegisterException) {
                     Log.e("MagicLinkFragment", e.toString())
                 }
             } else {
                 try {
-                    val magicLink = passage.newLoginMagicLink(args.identifier)
-                    newMagicLinkId = magicLink?.id
-                } catch (e: NewLoginMagicLinkException) {
+                    val magicLink = passage.magicLink.login(args.identifier)
+                    newMagicLinkId = magicLink.id
+                } catch (e: MagicLinkLoginException) {
                     Log.e("MagicLinkFragment", e.toString())
                 }
             }
@@ -106,7 +108,7 @@ class MagicLinkFragment: Fragment(R.layout.fragment_magiclink) {
     private fun checkMagicLinkStatus() {
         ioScope.launch {
             try {
-                passage.getMagicLinkStatus(newMagicLinkId ?: args.magicLinkId) ?: return@launch
+                passage.magicLink.status(newMagicLinkId ?: args.magicLinkId) ?: return@launch
                 navigateToWelcome()
             } catch (e: GetMagicLinkStatusException) {
                 when (e) {

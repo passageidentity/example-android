@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.ExampleAndroid"
-        tools:targetApi="31">
+        >
 
         <!-- For enabling use of Android Credential Manager (required) -->
         <meta-data
@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- For enabling magic link app links (optional) -->
+            <!-- For enabling magic link app links and Hosted Auth -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -38,10 +38,11 @@
                 <data android:scheme="http" />
                 <data android:scheme="https" />
                 <data android:host="@string/passage_auth_origin" />
+                <data android:pathPrefix="/android/id.passage.example_android"/>
             </intent-filter>
 
         </activity>
-
     </application>
 
 </manifest>
+

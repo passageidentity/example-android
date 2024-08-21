@@ -11,16 +11,15 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import id.passage.android.Passage
-import id.passage.android.exceptions.NewLoginOneTimePasscodeException
-import id.passage.android.exceptions.NewRegisterOneTimePasscodeException
 import id.passage.android.exceptions.OneTimePasscodeActivateException
 import id.passage.android.exceptions.OneTimePasscodeActivateInvalidRequestException
+import id.passage.android.exceptions.OneTimePasscodeLoginException
+import id.passage.android.exceptions.OneTimePasscodeRegisterException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class OTPFragment: Fragment(R.layout.fragment_otp) {
-
+class OTPFragment : Fragment(R.layout.fragment_otp) {
     private lateinit var passage: Passage
 
     private lateinit var editText: EditText
@@ -33,10 +32,13 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private var newOTPId: String? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
-        passage = Passage(requireActivity())
+        passage = Passage(requireActivity(), "YOUR_APP_ID")
 
         setupView(view)
         setupListeners()
@@ -47,8 +49,9 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
         continueButton = view.findViewById(R.id.continueButton)
         detailsTextView = view.findViewById(R.id.detailsTextView)
         resendButton = view.findViewById(R.id.resendButton)
-        val textString = "A one-time code has been sent to<br><b>${args.identifier}</b><br>" +
-            "Enter the code here to ${ if (args.isNewUser) "register" else "log in" }."
+        val textString =
+            "A one-time code has been sent to<br><b>${args.identifier}</b><br>" +
+                "Enter the code here to ${ if (args.isNewUser) "register" else "log in" }."
         detailsTextView.text = Html.fromHtml(textString)
         editText.requestFocus()
     }
@@ -67,7 +70,7 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
         val otpId = newOTPId ?: args.otpId
         ioScope.launch {
             try {
-                passage.oneTimePasscodeActivate(otp, otpId)
+                passage.oneTimePasscode.activate(otp, otpId)
             } catch (e: OneTimePasscodeActivateException) {
                 handleActivationException(e)
                 return@launch
@@ -80,16 +83,16 @@ class OTPFragment: Fragment(R.layout.fragment_otp) {
         ioScope.launch {
             if (args.isNewUser) {
                 try {
-                    val newOTP = passage.newRegisterOneTimePasscode(args.identifier)
+                    val newOTP = passage.oneTimePasscode.register(args.identifier)
                     newOTPId = newOTP.otpId
-                } catch (e: NewRegisterOneTimePasscodeException) {
+                } catch (e: OneTimePasscodeRegisterException) {
                     Log.e("OTPFragment", e.toString())
                 }
             } else {
                 try {
-                    val newOTP = passage.newLoginOneTimePasscode(args.identifier)
+                    val newOTP = passage.oneTimePasscode.login(args.identifier)
                     newOTPId = newOTP.otpId
-                } catch(e: NewLoginOneTimePasscodeException) {
+                } catch (e: OneTimePasscodeLoginException) {
                     Log.e("OTPFragment", e.toString())
                 }
             }

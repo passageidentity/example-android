@@ -2,7 +2,6 @@
     <string name="app_name">Passage</string>
 
     <!-- Required Passage app settings -->
-    <string name="passage_app_id">YOUR_APP_ID</string>
     <string name="passage_auth_origin">YOUR_AUTH_ORIGIN</string>
     <string name="asset_statements">
       [{
