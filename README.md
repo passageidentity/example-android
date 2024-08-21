@@ -9,7 +9,8 @@
 
 A successful registration flow will look like this:
 
-<img width="1069" alt="Screenshot 2023-05-15 at 5 42 31 PM" src="https://github.com/passageidentity/example-android/assets/16176400/22c00338-2912-4275-a3a3-02282aa85e66">
+
+All good, there’s still a small chance they could make it later in September if a cancellation comes up.
 
 
 <br>
