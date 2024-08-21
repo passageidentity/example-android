@@ -5,13 +5,13 @@
 
 [Passage](https://passage.id) and the [Passage Android SDK](https://github.com/passageidentity/passage-android) were built to make passkey authentication as fast, simple, and secure as possible. This example Android application is a great place to start. Before using Passage in your own Android app, you can use this example app to:
 
-* ** Login/Register with Passkeys: **  Experience secure and user-friendly passkey authentication.
+*  **Login/Register with Passkeys:**   Experience secure and user-friendly passkey authentication.
 
-* ** Login/Register with One-Time Passcode (OTP): **  Implement OTP-based authentication for enhanced security.
+* **Login/Register with One-Time Passcode (OTP):**  Implement OTP-based authentication for enhanced security.
 
-* ** Login/Register with Magic Link: **  Provide users with a seamless login experience using magic links.
+* **Login/Register with Magic Link:**  Provide users with a seamless login experience using magic links.
 
-* ** Login/Register with Hosted Login: **  Utilize hosted login to handle authentication externally.
+* **Login/Register with Hosted Login:**  Utilize hosted login to handle authentication externally.
 
 <img width="700" height="1100" alt="image" src="https://github.com/user-attachments/assets/674fd6e6-0330-42e2-b467-eada7709f509">
 
