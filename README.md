@@ -13,8 +13,7 @@
 
 * Login/Register with Hosted Login: Utilize hosted login to handle authentication externally.
 
-
-![image](https://github.com/user-attachments/assets/674fd6e6-0330-42e2-b467-eada7709f509)
+<img width="927" height="500" alt="image" src="https://github.com/user-attachments/assets/674fd6e6-0330-42e2-b467-eada7709f509">
 
 
 <br>
