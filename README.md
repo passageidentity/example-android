@@ -33,8 +33,9 @@
 
 ### ✏️ Modify `strings.xml` file
 
-In the [strings.xml file](https://github.com/passageidentity/example-android/blob/main/app/src/main/res/values/strings.xml) replace `YOUR_APP_ID` and `YOUR_AUTH_ORIGIN` with your app’s Passage app id and auth origin, respectively. Learn more about Passage app ids and auth origins [here](https://docs.passage.id/getting-started/creating-a-new-app).
-<img width="1011" alt="Screenshot 2023-05-15 at 5 54 58 PM" src="https://github.com/passageidentity/example-android/assets/16176400/6bd89ecd-12c7-4f1f-a2cc-2c2e1daa9dfc">
+In the [strings.xml file](https://github.com/passageidentity/example-android/blob/main/app/src/main/res/values/strings.xml) replace`YOUR_AUTH_ORIGIN` with your app’s Passage auth origin, respectively. Learn more about Passage app ids and auth origins [here](https://docs.passage.id/getting-started/creating-a-new-app).
+<img width="927" alt="image" src="https://github.com/user-attachments/assets/a4ce766a-12f0-468d-a071-2e19ac3edc25">
+
 
 
 ### 🚀 Run the app!
