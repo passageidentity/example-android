@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         if (code != null && state != null) {
             try {
                 ioScope.launch {
-                    passage.hosted.hostedAuthFinish(code, state)
+                    passage.hosted.finish(code, state)
                     val loginFragment = currentFragment as? LoginFragment ?: return@launch
                     loginFragment.handleDeepLink()
                 }

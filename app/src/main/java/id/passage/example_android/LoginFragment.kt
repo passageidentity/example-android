@@ -109,7 +109,7 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
 
     private fun onClickWithHosted() {
         try {
-            passage.hosted.hostedAuthStart()
+            passage.hosted.start()
         } catch (e: Exception) {
             // Handle the error here
         }
